@@ -1,0 +1,186 @@
+/*
+  Cliente.css
+
+  Estilos correspondientes al módulo
+  de gestión de clientes.
+*/
+
+/* Contenedor principal */
+
+section{
+
+    max-width:1100px;
+
+    margin:30px auto;
+
+    background:white;
+
+    padding:35px;
+
+    border-radius:18px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.12);
+
+}
+
+/* Títulos */
+
+section h2{
+
+    text-align:center;
+
+    color:#138d2e;
+
+    font-size:34px;
+
+    margin-bottom:10px;
+
+}
+
+section h3{
+
+    color:#177a29;
+
+    text-align:center;
+
+    margin:30px 0 20px;
+
+}
+
+/* Descripción */
+
+section p{
+
+    text-align:center;
+
+    color:#555;
+
+    margin-bottom:30px;
+
+}
+
+/* Formularios */
+
+input{
+
+    width:100%;
+
+    padding:14px;
+
+    border:2px solid #cdeccd;
+
+    border-radius:10px;
+
+    font-size:15px;
+
+    transition:.3s;
+
+    box-sizing:border-box;
+
+}
+
+input:focus{
+
+    outline:none;
+
+    border-color:#2bd600;
+
+    box-shadow:0 0 8px rgba(43,214,0,.35);
+
+}
+
+/* Botones */
+
+button{
+
+    background:#2bd600;
+
+    color:white;
+
+    border:none;
+
+    padding:12px 22px;
+
+    border-radius:8px;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+button:hover{
+
+    background:#1faa00;
+
+    transform:translateY(-2px);
+
+}
+
+/* Tabla */
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:25px;
+
+    overflow:hidden;
+
+    border-radius:12px;
+
+}
+
+thead{
+
+    background:#2bd600;
+
+    color:white;
+
+}
+
+th{
+
+    padding:14px;
+
+}
+
+td{
+
+    padding:14px;
+
+    text-align:center;
+
+    border-bottom:1px solid #e5e5e5;
+
+}
+
+tbody tr:nth-child(even){
+
+    background:#f5fff2;
+
+}
+
+tbody tr:hover{
+
+    background:#e8ffe2;
+
+}
+
+/* Línea divisoria */
+
+hr{
+
+    margin:35px 0;
+
+    border:none;
+
+    border-top:2px solid #d9f3d7;
+
+}

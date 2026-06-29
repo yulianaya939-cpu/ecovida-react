@@ -1,0 +1,27 @@
+/*
+  Footer.css
+
+  Estilos correspondientes al componente Footer.
+*/
+
+.footer{
+
+    background:#22b800;
+
+    color:white;
+
+    text-align:center;
+
+    padding:20px;
+
+    margin-top:40px;
+
+    font-size:15px;
+
+}
+
+.footer p{
+
+    margin:5px;
+
+}
