@@ -1,3 +1,5 @@
 link video: https://drive.google.com/file/d/1fBXwuSIsnRltbLm4BmNb1GH1sjgRStr3/view?usp=sharing
 
-link repositorio git: 
+link videos de correcciones: https://drive.google.com/file/d/1yqdUXXO92_4p-fWysBmwBeAvK2anuWUy/view?usp=sharing
+
+link repositorio git: https://github.com/yulianaya939-cpu/ecovida-react.git

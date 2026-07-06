@@ -6,28 +6,52 @@
 
   Permite consultar, registrar, actualizar
   y eliminar residuos utilizando la API REST.
+
+  Cada residuo se encuentra asociado
+  a un cliente registrado en el sistema.
 */
 
 import { useEffect, useState } from 'react'
 
+/*
+  Importación de los servicios
+  relacionados con residuos.
+*/
 import {
+
   obtenerResiduos,
   guardarResiduo,
   actualizarResiduo,
   eliminarResiduo
+
 } from '../services/ResiduoService'
 
-import '../styles/Residuos.css'
+/*
+  Importación del servicio
+  encargado de consultar clientes.
+*/
+import {
+
+  obtenerClientes
+
+} from '../services/ClienteService'
+
 
 function Residuos() {
 
   /*
-    Lista de residuos.
+    Lista de residuos registrados.
   */
   const [residuos, setResiduos] = useState([])
 
   /*
-    Identificador del residuo que se está editando.
+    Lista de clientes registrados.
+  */
+  const [clientes, setClientes] = useState([])
+
+  /*
+    Identificador del residuo
+    que se encuentra en edición.
   */
   const [idResiduo, setIdResiduo] = useState(null)
 
@@ -41,11 +65,18 @@ function Residuos() {
   const [descripcion, setDescripcion] = useState('')
 
   /*
-    Carga los residuos al iniciar.
+    Cliente asociado al residuo.
+  */
+  const [clienteId, setClienteId] = useState('')
+
+  /*
+    Carga inicial del componente.
   */
   useEffect(() => {
 
     cargarResiduos()
+
+    cargarClientes()
 
   }, [])
 
@@ -61,7 +92,19 @@ function Residuos() {
   }
 
   /*
-    Limpia el formulario.
+    Consulta los clientes registrados.
+  */
+  const cargarClientes = async () => {
+
+    const datos = await obtenerClientes()
+
+    setClientes(datos)
+
+  }
+
+  /*
+    Limpia todos los campos
+    del formulario.
   */
   const limpiarFormulario = () => {
 
@@ -72,6 +115,7 @@ function Residuos() {
     setCantidad('')
     setUnidadMedida('')
     setDescripcion('')
+    setClienteId('')
 
   }
 
@@ -81,38 +125,49 @@ function Residuos() {
   const guardar = async () => {
 
     if (
+
       nombre === '' ||
       tipo === '' ||
-      cantidad === ''
+      cantidad === '' ||
+      clienteId === ''
+
     ) {
 
-      alert('Complete los campos obligatorios')
+      alert('Complete todos los campos obligatorios.')
 
       return
 
     }
 
+    /*
+      Objeto enviado al backend.
+    */
     const residuo = {
 
       nombre,
       tipo,
       cantidad,
       unidadMedida,
-      descripcion
+      descripcion,
+
+      cliente: {
+
+        id: Number(clienteId)
+
+      }
 
     }
-
-    if (idResiduo === null) {
+        if (idResiduo === null) {
 
       await guardarResiduo(residuo)
 
-      alert('Residuo registrado correctamente')
+      alert('Residuo registrado correctamente.')
 
     } else {
 
       await actualizarResiduo(idResiduo, residuo)
 
-      alert('Residuo actualizado correctamente')
+      alert('Residuo actualizado correctamente.')
 
     }
 
@@ -123,7 +178,8 @@ function Residuos() {
   }
 
   /*
-    Carga un residuo en el formulario.
+    Carga un residuo en el formulario
+    para su edición.
   */
   const editarResiduo = (residuo) => {
 
@@ -135,10 +191,19 @@ function Residuos() {
     setUnidadMedida(residuo.unidadMedida)
     setDescripcion(residuo.descripcion)
 
+    /*
+      Carga el cliente asociado.
+    */
+    if (residuo.cliente) {
+
+      setClienteId(residuo.cliente.id)
+
+    }
+
   }
 
   /*
-    Elimina un residuo.
+    Elimina un residuo registrado.
   */
   const borrarResiduo = async (id) => {
 
@@ -174,9 +239,13 @@ function Residuos() {
       <h3>
 
         {
+
           idResiduo === null
+
             ? 'Registrar residuo'
+
             : 'Actualizar residuo'
+
         }
 
       </h3>
@@ -226,12 +295,50 @@ function Residuos() {
 
       <br /><br />
 
+      {/* Cliente asociado al residuo */}
+
+      <select
+        value={clienteId}
+        onChange={(e) => setClienteId(e.target.value)}
+      >
+
+        <option value="">
+
+          Seleccione un cliente
+
+        </option>
+
+        {
+
+          clientes.map(cliente => (
+
+            <option
+              key={cliente.id}
+              value={cliente.id}
+            >
+
+              {cliente.nombres} {cliente.apellidos}
+
+            </option>
+
+          ))
+
+        }
+
+      </select>
+
+      <br /><br />
+
       <button onClick={guardar}>
 
         {
+
           idResiduo === null
+
             ? 'Guardar Residuo'
+
             : 'Actualizar Residuo'
+
         }
 
       </button>
@@ -268,6 +375,7 @@ function Residuos() {
             <th>Tipo</th>
             <th>Cantidad</th>
             <th>Unidad</th>
+            <th>Cliente</th>
             <th>Acciones</th>
 
           </tr>
@@ -287,6 +395,20 @@ function Residuos() {
                 <td>{residuo.tipo}</td>
                 <td>{residuo.cantidad}</td>
                 <td>{residuo.unidadMedida}</td>
+
+                <td>
+
+                  {
+
+                    residuo.cliente
+
+                      ? `${residuo.cliente.nombres} ${residuo.cliente.apellidos}`
+
+                      : 'Sin cliente'
+
+                  }
+
+                </td>
 
                 <td>
 
