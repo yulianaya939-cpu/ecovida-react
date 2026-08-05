@@ -1,71 +1,90 @@
 /*
   App.jsx
 
-  Componente principal de la aplicación Eco Vida.
+  Componente principal del sistema Eco Vida.
 
-  Desde este archivo se administra la navegación
-  entre las diferentes páginas utilizando useState.
+  Controla el inicio de sesión y la navegación
+  entre los diferentes módulos.
 */
 
 /* Importación de estilos */
 import './App.css'
 
-/* Importación de Hook de React */
+/* Hook de React */
 import { useState } from 'react'
 
-/* Importación de componentes */
+/* Componentes */
 import Header from './components/Header'
 import Menu from './components/Menu'
 import Footer from './components/Footer'
 
-/* Importación de páginas */
+/* Páginas */
+import Login from './pages/Login'
 import Inicio from './pages/Inicio'
 import Cliente from './pages/Cliente'
 import Residuos from './pages/Residuos'
+import Usuario from './pages/Usuario'
 
 function App() {
 
-  /*
-    Estado encargado de controlar
-    la página actualmente visible.
-  */
+  // Controla si el usuario inició sesión
+  const [autenticado, setAutenticado] = useState(false)
+
+  // Controla la página actual
   const [pagina, setPagina] = useState('inicio')
 
+  // Si no ha iniciado sesión, mostrar Login
+  if (!autenticado) {
+
+    return (
+
+      <div className="app">
+
+        <Header />
+
+        <Login
+          setAutenticado={setAutenticado}
+        />
+
+        <Footer />
+
+      </div>
+
+    )
+
+  }
+
+  // Si inició sesión, mostrar la aplicación
   return (
 
     <div className="app">
 
-      {/* Encabezado principal */}
       <Header />
 
-      {/* Menú de navegación */}
       <Menu setPagina={setPagina} />
 
-      {/* Página de inicio */}
       {
         pagina === 'inicio' && <Inicio />
       }
 
-      {/* Página de clientes */}
       {
         pagina === 'clientes' && <Cliente />
       }
 
-      {/* Página de residuos */}
       {
         pagina === 'residuos' && <Residuos />
       }
 
-      {/* Pie de página */}
+      {
+        pagina === 'usuarios' && <Usuario />
+      }
+
       <Footer />
 
     </div>
 
   )
+
 }
 
-/*
-  Exporta el componente App para que pueda
-  ser utilizado por main.jsx.
-*/
 export default App

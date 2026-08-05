@@ -42,6 +42,14 @@ function Menu({ setPagina }) {
         ♻️ Residuos
       </button>
 
+      {/* Botón del módulo usuarios */}
+      <button
+        className="menu-boton"
+        onClick={() => setPagina('usuarios')}
+      >
+        👤 Usuarios
+      </button>
+
     </nav>
 
   )
