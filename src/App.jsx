@@ -4,36 +4,45 @@
   Componente principal del sistema Eco Vida.
 
   Controla el inicio de sesión y la navegación
-  entre los diferentes módulos.
+  entre los diferentes módulos de la aplicación.
 */
 
-/* Importación de estilos */
 import './App.css'
 
-/* Hook de React */
+/* Hook de React para manejar estados */
 import { useState } from 'react'
 
-/* Componentes */
+/* Componentes principales */
 import Header from './components/Header'
 import Menu from './components/Menu'
 import Footer from './components/Footer'
 
-/* Páginas */
+/* Páginas o módulos de la aplicación */
 import Login from './pages/Login'
 import Inicio from './pages/Inicio'
 import Cliente from './pages/Cliente'
 import Residuos from './pages/Residuos'
 import Usuario from './pages/Usuario'
+import Recolecciones from './pages/Recolecciones'
 
 function App() {
 
-  // Controla si el usuario inició sesión
+  /*
+    Estado que controla si el usuario
+    ha iniciado sesión correctamente.
+  */
   const [autenticado, setAutenticado] = useState(false)
 
-  // Controla la página actual
+  /*
+    Estado que controla cuál módulo
+    se está mostrando actualmente.
+  */
   const [pagina, setPagina] = useState('inicio')
 
-  // Si no ha iniciado sesión, mostrar Login
+  /*
+    Si el usuario todavía no ha iniciado sesión,
+    se muestra únicamente la pantalla de Login.
+  */
   if (!autenticado) {
 
     return (
@@ -51,32 +60,45 @@ function App() {
       </div>
 
     )
-
   }
 
-  // Si inició sesión, mostrar la aplicación
+  /*
+    Cuando el usuario inicia sesión,
+    se muestra el menú y los diferentes módulos.
+  */
   return (
 
     <div className="app">
 
       <Header />
 
-      <Menu setPagina={setPagina} />
+      <Menu
+        setPagina={setPagina}
+      />
 
+      {/* Página de inicio */}
       {
         pagina === 'inicio' && <Inicio />
       }
 
+      {/* Módulo de clientes */}
       {
         pagina === 'clientes' && <Cliente />
       }
 
+      {/* Módulo de residuos */}
       {
         pagina === 'residuos' && <Residuos />
       }
 
+      {/* Módulo de usuarios */}
       {
         pagina === 'usuarios' && <Usuario />
+      }
+
+      {/* Módulo de recolecciones */}
+      {
+        pagina === 'recolecciones' && <Recolecciones />
       }
 
       <Footer />
@@ -84,7 +106,6 @@ function App() {
     </div>
 
   )
-
 }
 
 export default App

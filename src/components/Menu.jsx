@@ -4,9 +4,8 @@
   Este componente representa el menú principal
   de navegación del sistema Eco Vida.
 
-  Recibe mediante Props la función setPagina,
-  la cual permite cambiar la página visible
-  dentro del componente App.
+  Permite acceder a los diferentes módulos
+  de la aplicación mediante botones.
 */
 
 /* Importación de estilos */
@@ -26,7 +25,7 @@ function Menu({ setPagina }) {
         🏠 Inicio
       </button>
 
-      {/* Botón del módulo clientes */}
+      {/* Botón del módulo de clientes */}
       <button
         className="menu-boton"
         onClick={() => setPagina('clientes')}
@@ -34,7 +33,7 @@ function Menu({ setPagina }) {
         👥 Clientes
       </button>
 
-      {/* Botón del módulo residuos */}
+      {/* Botón del módulo de residuos */}
       <button
         className="menu-boton"
         onClick={() => setPagina('residuos')}
@@ -42,7 +41,15 @@ function Menu({ setPagina }) {
         ♻️ Residuos
       </button>
 
-      {/* Botón del módulo usuarios */}
+      {/* Botón del módulo de recolecciones */}
+      <button
+        className="menu-boton"
+        onClick={() => setPagina('recolecciones')}
+      >
+        🚛 Recolecciones
+      </button>
+
+      {/* Botón del módulo de usuarios */}
       <button
         className="menu-boton"
         onClick={() => setPagina('usuarios')}
@@ -57,7 +64,7 @@ function Menu({ setPagina }) {
 }
 
 /*
-  Exporta el componente para ser utilizado
+  Exporta el componente para utilizarlo
   desde App.jsx.
 */
 export default Menu
