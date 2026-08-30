@@ -1,32 +1,76 @@
-import axios from "axios";
+/*
+  UsuarioService.js
 
-const API_URL = "http://localhost:8080/api/usuarios";
+  Servicio encargado de comunicarse con la API REST
+  de usuarios desarrollada en Spring Boot.
 
-// LISTAR
+  Las solicitudes utilizan la instancia centralizada
+  de Axios, que agrega automáticamente el JWT.
+*/
+
+import api from "./api";
+
+const API_URL = "/api/usuarios";
+
+/*
+  LISTAR
+*/
 export const obtenerUsuarios = async () => {
-    const respuesta = await axios.get(API_URL);
-    return respuesta.data;
+
+  const respuesta = await api.get(API_URL);
+
+  return respuesta.data;
+
 };
 
-// BUSCAR POR ID
+/*
+  BUSCAR POR ID
+*/
 export const obtenerUsuario = async (id) => {
-    const respuesta = await axios.get(`${API_URL}/${id}`);
-    return respuesta.data;
+
+  const respuesta = await api.get(
+    `${API_URL}/${id}`
+  );
+
+  return respuesta.data;
+
 };
 
-// GUARDAR
+/*
+  GUARDAR
+*/
 export const guardarUsuario = async (usuario) => {
-    const respuesta = await axios.post(API_URL, usuario);
-    return respuesta.data;
+
+  const respuesta = await api.post(
+    API_URL,
+    usuario
+  );
+
+  return respuesta.data;
+
 };
 
-// ACTUALIZAR
+/*
+  ACTUALIZAR
+*/
 export const actualizarUsuario = async (id, usuario) => {
-    const respuesta = await axios.put(`${API_URL}/${id}`, usuario);
-    return respuesta.data;
+
+  const respuesta = await api.put(
+    `${API_URL}/${id}`,
+    usuario
+  );
+
+  return respuesta.data;
+
 };
 
-// ELIMINAR
+/*
+  ELIMINAR
+*/
 export const eliminarUsuario = async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
+
+  await api.delete(
+    `${API_URL}/${id}`
+  );
+
 };

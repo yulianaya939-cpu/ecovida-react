@@ -1,80 +1,63 @@
 /*
   ResiduoService.js
 
-  Este archivo contiene las funciones encargadas
-  de comunicarse con la API REST de residuos
-  desarrollada en Spring Boot.
+  Servicio encargado de comunicarse con la API REST
+  de residuos desarrollada en Spring Boot.
 
-  Aquí se implementan las operaciones CRUD
-  relacionadas con los residuos.
+  Las solicitudes utilizan la instancia centralizada
+  de Axios, que agrega automáticamente el JWT.
 */
 
-const URL_RESIDUOS = 'http://localhost:8080/residuos'
+import api from "./api";
+
+const URL_RESIDUOS = "/residuos";
 
 /*
   Obtiene todos los residuos registrados.
 */
 export const obtenerResiduos = async () => {
 
-  const respuesta = await fetch(URL_RESIDUOS)
+  const respuesta = await api.get(URL_RESIDUOS);
 
-  const datos = await respuesta.json()
+  return respuesta.data;
 
-  return datos
-
-}
+};
 
 /*
   Registra un nuevo residuo.
 */
 export const guardarResiduo = async (residuo) => {
 
-  const respuesta = await fetch(URL_RESIDUOS, {
+  const respuesta = await api.post(
+    URL_RESIDUOS,
+    residuo
+  );
 
-    method: 'POST',
+  return respuesta.data;
 
-    headers: {
-      'Content-Type': 'application/json'
-    },
-
-    body: JSON.stringify(residuo)
-
-  })
-
-  return await respuesta.json()
-
-}
+};
 
 /*
   Actualiza un residuo existente.
 */
 export const actualizarResiduo = async (id, residuo) => {
 
-  const respuesta = await fetch(`${URL_RESIDUOS}/${id}`, {
+  const respuesta = await api.put(
+    `${URL_RESIDUOS}/${id}`,
+    residuo
+  );
 
-    method: 'PUT',
+  return respuesta.data;
 
-    headers: {
-      'Content-Type': 'application/json'
-    },
-
-    body: JSON.stringify(residuo)
-
-  })
-
-  return await respuesta.json()
-
-}
+};
 
 /*
   Elimina un residuo por ID.
 */
 export const eliminarResiduo = async (id) => {
 
-  await fetch(`${URL_RESIDUOS}/${id}`, {
+  await api.delete(
+    `${URL_RESIDUOS}/${id}`
+  );
 
-    method: 'DELETE'
-
-  })
-
-}
+};

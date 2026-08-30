@@ -6,13 +6,14 @@
   del backend.
 */
 
-import axios from "axios";
-
-const API_URL = "http://localhost:8080/api/auth/login";
+import api from "./api";
 
 export const iniciarSesion = async (credenciales) => {
 
-    const respuesta = await axios.post(API_URL, credenciales);
+    const respuesta = await api.post(
+        "/api/auth/login",
+        credenciales
+    );
 
     return respuesta.data;
 

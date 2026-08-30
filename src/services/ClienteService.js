@@ -1,80 +1,63 @@
 /*
   ClienteService.js
 
-  Este archivo contiene las funciones encargadas
-  de comunicarse con la API REST desarrollada
-  en Spring Boot.
+  Servicio encargado de comunicarse con la API REST
+  desarrollada en Spring Boot.
 
-  Aquí se implementan las operaciones CRUD
-  relacionadas con los clientes.
+  Las solicitudes utilizan la instancia centralizada
+  de Axios, que agrega automáticamente el JWT.
 */
 
-const URL_CLIENTES = 'http://localhost:8080/clientes'
+import api from "./api";
+
+const URL_CLIENTES = "/clientes";
 
 /*
   Obtiene todos los clientes registrados.
 */
 export const obtenerClientes = async () => {
 
-  const respuesta = await fetch(URL_CLIENTES)
+  const respuesta = await api.get(URL_CLIENTES);
 
-  const datos = await respuesta.json()
+  return respuesta.data;
 
-  return datos
-
-}
+};
 
 /*
   Registra un nuevo cliente.
 */
 export const guardarCliente = async (cliente) => {
 
-  const respuesta = await fetch(URL_CLIENTES, {
+  const respuesta = await api.post(
+    URL_CLIENTES,
+    cliente
+  );
 
-    method: 'POST',
+  return respuesta.data;
 
-    headers: {
-      'Content-Type': 'application/json'
-    },
-
-    body: JSON.stringify(cliente)
-
-  })
-
-  return await respuesta.json()
-
-}
+};
 
 /*
   Actualiza un cliente existente.
 */
 export const actualizarCliente = async (id, cliente) => {
 
-  const respuesta = await fetch(`${URL_CLIENTES}/${id}`, {
+  const respuesta = await api.put(
+    `${URL_CLIENTES}/${id}`,
+    cliente
+  );
 
-    method: 'PUT',
+  return respuesta.data;
 
-    headers: {
-      'Content-Type': 'application/json'
-    },
-
-    body: JSON.stringify(cliente)
-
-  })
-
-  return await respuesta.json()
-
-}
+};
 
 /*
   Elimina un cliente por ID.
 */
 export const eliminarCliente = async (id) => {
 
-  await fetch(`${URL_CLIENTES}/${id}`, {
+  await api.delete(
+    `${URL_CLIENTES}/${id}`
+  );
 
-    method: 'DELETE'
-
-  })
-
-}
+};

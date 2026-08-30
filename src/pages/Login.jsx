@@ -9,7 +9,7 @@ import { useState } from "react";
 import { iniciarSesion } from "../services/LoginService";
 import "../styles/Login.css";
 
-function Login({ setAutenticado }) {
+function Login({ setAutenticado, setRol }) {
 
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
@@ -19,22 +19,38 @@ function Login({ setAutenticado }) {
     try {
 
       const respuesta = await iniciarSesion({
-
         correo,
         password
-
       });
 
       if (respuesta.autenticado) {
 
+        /*
+          Guarda el token JWT recibido
+          desde el backend.
+        */
         localStorage.setItem(
           "token",
           respuesta.token
         );
 
-        alert(respuesta.mensaje);
+        /*
+          Guarda el rol del usuario para
+          controlar la interfaz de React.
+        */
+        localStorage.setItem(
+          "rol",
+          respuesta.rol
+        );
 
+        /*
+          Actualiza el estado de autenticación
+          y el rol en App.jsx.
+        */
+        setRol(respuesta.rol);
         setAutenticado(true);
+
+        alert(respuesta.mensaje);
 
       } else {
 
@@ -44,7 +60,11 @@ function Login({ setAutenticado }) {
 
     } catch (error) {
 
-      alert("No fue posible conectar con el servidor.");
+      console.error("Error en el inicio de sesión:", error);
+
+      alert(
+        "No fue posible conectar con el servidor."
+      );
 
     }
 
@@ -71,9 +91,7 @@ function Login({ setAutenticado }) {
       />
 
       <button onClick={ingresar}>
-
         Ingresar
-
       </button>
 
     </div>

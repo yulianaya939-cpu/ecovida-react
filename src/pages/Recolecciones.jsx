@@ -4,15 +4,17 @@
   Este componente representa el módulo de gestión
   de recolecciones del sistema Eco Vida.
 
-  Permite consultar, registrar, actualizar
-  y eliminar recolecciones utilizando la API REST.
+  Permite consultar, registrar y actualizar
+  recolecciones para usuarios autenticados.
+
+  La eliminación de recolecciones está disponible
+  únicamente para el Administrador.
 
   Cada recolección se relaciona con un cliente
   y con un residuo registrado en el sistema.
 */
 
 import { useEffect, useState } from 'react'
-
 
 /*
   Importación de los servicios relacionados
@@ -25,7 +27,6 @@ import {
   eliminarRecoleccion
 } from '../services/RecoleccionService'
 
-
 /*
   Importación del servicio encargado
   de consultar los clientes.
@@ -33,7 +34,6 @@ import {
 import {
   obtenerClientes
 } from '../services/ClienteService'
-
 
 /*
   Importación del servicio encargado
@@ -45,6 +45,18 @@ import {
 
 
 function Recolecciones() {
+
+  /*
+    Recuperamos el rol del usuario autenticado.
+  */
+  const rol = localStorage.getItem('rol')
+
+  /*
+    Determinamos si el usuario actual
+    es Administrador.
+  */
+  const esAdministrador = rol === 'Administrador'
+
 
   /*
     Lista de recolecciones registradas.
@@ -107,9 +119,20 @@ function Recolecciones() {
   */
   const cargarRecolecciones = async () => {
 
-    const datos = await obtenerRecolecciones()
+    try {
 
-    setRecolecciones(datos)
+      const datos = await obtenerRecolecciones()
+
+      setRecolecciones(datos)
+
+    } catch (error) {
+
+      console.error(
+        'Error al cargar recolecciones:',
+        error
+      )
+
+    }
 
   }
 
@@ -120,9 +143,20 @@ function Recolecciones() {
   */
   const cargarClientes = async () => {
 
-    const datos = await obtenerClientes()
+    try {
 
-    setClientes(datos)
+      const datos = await obtenerClientes()
+
+      setClientes(datos)
+
+    } catch (error) {
+
+      console.error(
+        'Error al cargar clientes:',
+        error
+      )
+
+    }
 
   }
 
@@ -133,9 +167,20 @@ function Recolecciones() {
   */
   const cargarResiduos = async () => {
 
-    const datos = await obtenerResiduos()
+    try {
 
-    setResiduos(datos)
+      const datos = await obtenerResiduos()
+
+      setResiduos(datos)
+
+    } catch (error) {
+
+      console.error(
+        'Error al cargar residuos:',
+        error
+      )
+
+    }
 
   }
 
@@ -162,6 +207,9 @@ function Recolecciones() {
   /*
     Guarda una nueva recolección
     o actualiza una existente.
+
+    Tanto Usuario como Administrador
+    pueden registrar y actualizar recolecciones.
   */
   const guardar = async () => {
 
@@ -178,7 +226,9 @@ function Recolecciones() {
       residuoId === ''
     ) {
 
-      alert('Complete todos los campos obligatorios.')
+      alert(
+        'Complete todos los campos obligatorios.'
+      )
 
       return
 
@@ -213,39 +263,70 @@ function Recolecciones() {
     }
 
 
-    /*
-      Si no existe un ID se registra
-      una nueva recolección.
-    */
-    if (idRecoleccion === null) {
-
-      await guardarRecoleccion(recoleccion)
-
-      alert('Recolección registrada correctamente.')
-
-    } else {
+    try {
 
       /*
-        Si existe un ID se actualiza
-        la recolección seleccionada.
+        Si no existe un ID se registra
+        una nueva recolección.
       */
-      await actualizarRecoleccion(
-        idRecoleccion,
-        recoleccion
+      if (idRecoleccion === null) {
+
+        await guardarRecoleccion(
+          recoleccion
+        )
+
+        alert(
+          'Recolección registrada correctamente.'
+        )
+
+      } else {
+
+        /*
+          Si existe un ID se actualiza
+          la recolección seleccionada.
+        */
+        await actualizarRecoleccion(
+          idRecoleccion,
+          recoleccion
+        )
+
+        alert(
+          'Recolección actualizada correctamente.'
+        )
+
+      }
+
+
+      /*
+        Actualiza el listado después
+        de guardar la información.
+      */
+      await cargarRecolecciones()
+
+      limpiarFormulario()
+
+    } catch (error) {
+
+      console.error(
+        'Error al guardar recolección:',
+        error
       )
 
-      alert('Recolección actualizada correctamente.')
+      if (error.response?.status === 403) {
+
+        alert(
+          'No tienes permisos para realizar esta operación.'
+        )
+
+      } else {
+
+        alert(
+          'No fue posible guardar la recolección.'
+        )
+
+      }
 
     }
-
-
-    /*
-      Actualiza el listado después
-      de guardar la información.
-    */
-    await cargarRecolecciones()
-
-    limpiarFormulario()
 
   }
 
@@ -259,9 +340,15 @@ function Recolecciones() {
     setIdRecoleccion(recoleccion.id)
 
     setFecha(recoleccion.fecha || '')
-    setDepartamento(recoleccion.departamento || '')
-    setMunicipio(recoleccion.municipio || '')
-    setEstado(recoleccion.estado || 'Pendiente')
+    setDepartamento(
+      recoleccion.departamento || ''
+    )
+    setMunicipio(
+      recoleccion.municipio || ''
+    )
+    setEstado(
+      recoleccion.estado || 'Pendiente'
+    )
 
 
     /*
@@ -270,7 +357,9 @@ function Recolecciones() {
     */
     if (recoleccion.cliente) {
 
-      setClienteId(recoleccion.cliente.id)
+      setClienteId(
+        recoleccion.cliente.id
+      )
 
     } else {
 
@@ -285,7 +374,9 @@ function Recolecciones() {
     */
     if (recoleccion.residuo) {
 
-      setResiduoId(recoleccion.residuo.id)
+      setResiduoId(
+        recoleccion.residuo.id
+      )
 
     } else {
 
@@ -298,8 +389,18 @@ function Recolecciones() {
 
   /*
     Elimina una recolección.
+
+    Esta operación solamente está disponible
+    para el Administrador.
   */
   const borrarRecoleccion = async (id) => {
+
+    if (!esAdministrador) {
+
+      return
+
+    }
+
 
     const confirmar = window.confirm(
       '¿Desea eliminar esta recolección?'
@@ -312,11 +413,38 @@ function Recolecciones() {
     }
 
 
-    await eliminarRecoleccion(id)
+    try {
 
-    alert('Recolección eliminada correctamente.')
+      await eliminarRecoleccion(id)
 
-    await cargarRecolecciones()
+      alert(
+        'Recolección eliminada correctamente.'
+      )
+
+      await cargarRecolecciones()
+
+    } catch (error) {
+
+      console.error(
+        'Error al eliminar recolección:',
+        error
+      )
+
+      if (error.response?.status === 403) {
+
+        alert(
+          'No tienes permisos para eliminar recolecciones.'
+        )
+
+      } else {
+
+        alert(
+          'No fue posible eliminar la recolección.'
+        )
+
+      }
+
+    }
 
   }
 
@@ -328,8 +456,16 @@ function Recolecciones() {
       <h2>Módulo de Recolecciones</h2>
 
       <p>
-        En este módulo se administran las recolecciones
-        de residuos reciclables registradas por la empresa.
+
+        En este módulo se administran las
+        recolecciones de residuos reciclables
+        registradas por la empresa.
+
+        {
+          esAdministrador &&
+          ' El Administrador también puede eliminar recolecciones.'
+        }
+
       </p>
 
 
@@ -345,41 +481,53 @@ function Recolecciones() {
 
 
       {/* Fecha de la recolección */}
+
       <input
         type="date"
         value={fecha}
-        onChange={(e) => setFecha(e.target.value)}
+        onChange={(e) =>
+          setFecha(e.target.value)
+        }
       />
 
       <br /><br />
 
 
       {/* Departamento */}
+
       <input
         type="text"
         placeholder="Departamento"
         value={departamento}
-        onChange={(e) => setDepartamento(e.target.value)}
+        onChange={(e) =>
+          setDepartamento(e.target.value)
+        }
       />
 
       <br /><br />
 
 
       {/* Municipio */}
+
       <input
         type="text"
         placeholder="Municipio"
         value={municipio}
-        onChange={(e) => setMunicipio(e.target.value)}
+        onChange={(e) =>
+          setMunicipio(e.target.value)
+        }
       />
 
       <br /><br />
 
 
       {/* Estado de la recolección */}
+
       <select
         value={estado}
-        onChange={(e) => setEstado(e.target.value)}
+        onChange={(e) =>
+          setEstado(e.target.value)
+        }
       >
 
         <option value="Pendiente">
@@ -404,9 +552,12 @@ function Recolecciones() {
 
 
       {/* Cliente asociado */}
+
       <select
         value={clienteId}
-        onChange={(e) => setClienteId(e.target.value)}
+        onChange={(e) =>
+          setClienteId(e.target.value)
+        }
       >
 
         <option value="">
@@ -414,16 +565,20 @@ function Recolecciones() {
         </option>
 
         {
+
           clientes.map(cliente => (
 
             <option
               key={cliente.id}
               value={cliente.id}
             >
+
               {cliente.nombres} {cliente.apellidos}
+
             </option>
 
           ))
+
         }
 
       </select>
@@ -432,9 +587,12 @@ function Recolecciones() {
 
 
       {/* Residuo asociado */}
+
       <select
         value={residuoId}
-        onChange={(e) => setResiduoId(e.target.value)}
+        onChange={(e) =>
+          setResiduoId(e.target.value)
+        }
       >
 
         <option value="">
@@ -442,16 +600,20 @@ function Recolecciones() {
         </option>
 
         {
+
           residuos.map(residuo => (
 
             <option
               key={residuo.id}
               value={residuo.id}
             >
+
               {residuo.nombre}
+
             </option>
 
           ))
+
         }
 
       </select>
@@ -460,6 +622,7 @@ function Recolecciones() {
 
 
       {/* Botón para guardar o actualizar */}
+
       <button onClick={guardar}>
 
         {
@@ -472,14 +635,19 @@ function Recolecciones() {
 
 
       {/* Botón para cancelar la edición */}
+
       {
         idRecoleccion !== null && (
 
           <button
             onClick={limpiarFormulario}
-            style={{ marginLeft: '10px' }}
+            style={{
+              marginLeft: '10px'
+            }}
           >
+
             Cancelar
+
           </button>
 
         )
@@ -515,75 +683,115 @@ function Recolecciones() {
         <tbody>
 
           {
-            recolecciones.map(recoleccion => (
 
-              <tr key={recoleccion.id}>
+            recolecciones.map(
+              recoleccion => (
 
-                <td>
-                  {recoleccion.id}
-                </td>
+                <tr
+                  key={recoleccion.id}
+                >
 
-                <td>
-                  {recoleccion.fecha}
-                </td>
+                  <td>
+                    {recoleccion.id}
+                  </td>
 
-                <td>
-                  {recoleccion.departamento}
-                </td>
+                  <td>
+                    {recoleccion.fecha}
+                  </td>
 
-                <td>
-                  {recoleccion.municipio}
-                </td>
+                  <td>
+                    {recoleccion.departamento}
+                  </td>
 
-                <td>
-                  {recoleccion.estado}
-                </td>
+                  <td>
+                    {recoleccion.municipio}
+                  </td>
 
-                <td>
+                  <td>
+                    {recoleccion.estado}
+                  </td>
 
-                  {
-                    recoleccion.cliente
-                      ? `${recoleccion.cliente.nombres} ${recoleccion.cliente.apellidos}`
-                      : 'Sin cliente'
-                  }
+                  <td>
 
-                </td>
+                    {
 
-                <td>
+                      recoleccion.cliente
 
-                  {
-                    recoleccion.residuo
-                      ? recoleccion.residuo.nombre
-                      : 'Sin residuo'
-                  }
+                        ? `${recoleccion.cliente.nombres} ${recoleccion.cliente.apellidos}`
 
-                </td>
+                        : 'Sin cliente'
 
-                <td>
-
-                  <button
-                    onClick={() =>
-                      editarRecoleccion(recoleccion)
                     }
-                  >
-                    Editar
-                  </button>
 
+                  </td>
 
-                  <button
-                    onClick={() =>
-                      borrarRecoleccion(recoleccion.id)
+                  <td>
+
+                    {
+
+                      recoleccion.residuo
+
+                        ? recoleccion.residuo.nombre
+
+                        : 'Sin residuo'
+
                     }
-                    style={{ marginLeft: '10px' }}
-                  >
-                    Eliminar
-                  </button>
 
-                </td>
+                  </td>
 
-              </tr>
+                  <td>
 
-            ))
+                    {/* 
+                      Usuario y Administrador
+                      pueden editar.
+                    */}
+
+                    <button
+                      onClick={() =>
+                        editarRecoleccion(
+                          recoleccion
+                        )
+                      }
+                    >
+
+                      Editar
+
+                    </button>
+
+
+                    {/* 
+                      Solamente el Administrador
+                      puede eliminar.
+                    */}
+
+                    {
+                      esAdministrador && (
+
+                        <button
+                          onClick={() =>
+                            borrarRecoleccion(
+                              recoleccion.id
+                            )
+                          }
+                          style={{
+                            marginLeft: '10px'
+                          }}
+                        >
+
+                          Eliminar
+
+                        </button>
+
+                      )
+                    }
+
+                  </td>
+
+                </tr>
+
+              )
+            )
+
           }
 
         </tbody>

@@ -9,15 +9,12 @@
 
 import './App.css'
 
-/* Hook de React para manejar estados */
 import { useState } from 'react'
 
-/* Componentes principales */
 import Header from './components/Header'
 import Menu from './components/Menu'
 import Footer from './components/Footer'
 
-/* Páginas o módulos de la aplicación */
 import Login from './pages/Login'
 import Inicio from './pages/Inicio'
 import Cliente from './pages/Cliente'
@@ -25,23 +22,32 @@ import Residuos from './pages/Residuos'
 import Usuario from './pages/Usuario'
 import Recolecciones from './pages/Recolecciones'
 
+
 function App() {
 
   /*
-    Estado que controla si el usuario
-    ha iniciado sesión correctamente.
+    Estado que indica si el usuario
+    ha iniciado sesión.
   */
   const [autenticado, setAutenticado] = useState(false)
 
   /*
-    Estado que controla cuál módulo
-    se está mostrando actualmente.
+    Estado que almacena el rol del
+    usuario que inició sesión.
+  */
+  const [rol, setRol] = useState(null)
+
+  /*
+    Estado que controla la página
+    que se está mostrando.
   */
   const [pagina, setPagina] = useState('inicio')
 
+
   /*
-    Si el usuario todavía no ha iniciado sesión,
-    se muestra únicamente la pantalla de Login.
+    Si el usuario no está autenticado,
+    se muestra únicamente la pantalla
+    de inicio de sesión.
   */
   if (!autenticado) {
 
@@ -53,6 +59,7 @@ function App() {
 
         <Login
           setAutenticado={setAutenticado}
+          setRol={setRol}
         />
 
         <Footer />
@@ -60,11 +67,14 @@ function App() {
       </div>
 
     )
+
   }
 
+
   /*
-    Cuando el usuario inicia sesión,
-    se muestra el menú y los diferentes módulos.
+    Cuando el usuario está autenticado,
+    se muestra el menú principal y
+    los diferentes módulos.
   */
   return (
 
@@ -74,38 +84,55 @@ function App() {
 
       <Menu
         setPagina={setPagina}
+        rol={rol}
       />
+
 
       {/* Página de inicio */}
       {
         pagina === 'inicio' && <Inicio />
       }
 
+
       {/* Módulo de clientes */}
       {
-        pagina === 'clientes' && <Cliente />
+        pagina === 'clientes' && (
+          <Cliente rol={rol} />
+        )
       }
+
 
       {/* Módulo de residuos */}
       {
-        pagina === 'residuos' && <Residuos />
+        pagina === 'residuos' && (
+          <Residuos rol={rol} />
+        )
       }
+
 
       {/* Módulo de usuarios */}
       {
-        pagina === 'usuarios' && <Usuario />
+        pagina === 'usuarios' && (
+          <Usuario rol={rol} />
+        )
       }
+
 
       {/* Módulo de recolecciones */}
       {
-        pagina === 'recolecciones' && <Recolecciones />
+        pagina === 'recolecciones' && (
+          <Recolecciones rol={rol} />
+        )
       }
+
 
       <Footer />
 
     </div>
 
   )
+
 }
+
 
 export default App

@@ -4,8 +4,11 @@
   Este componente representa el módulo de gestión
   de clientes del sistema Eco Vida.
 
-  Permite consultar, registrar, actualizar
-  y eliminar clientes utilizando la API REST.
+  Permite consultar, registrar y actualizar clientes
+  para usuarios autenticados.
+
+  La eliminación de clientes está disponible
+  únicamente para el Administrador.
 */
 
 import { useEffect, useState } from 'react'
@@ -20,6 +23,17 @@ import {
 import '../styles/Cliente.css'
 
 function Cliente() {
+
+  /*
+    Recuperamos el rol del usuario autenticado.
+  */
+  const rol = localStorage.getItem('rol')
+
+  /*
+    Determinamos si el usuario actual
+    es Administrador.
+  */
+  const esAdministrador = rol === 'Administrador'
 
   /*
     Lista de clientes.
@@ -54,9 +68,20 @@ function Cliente() {
   */
   const cargarClientes = async () => {
 
-    const datos = await obtenerClientes()
+    try {
 
-    setClientes(datos)
+      const datos = await obtenerClientes()
+
+      setClientes(datos)
+
+    } catch (error) {
+
+      console.error(
+        'Error al cargar clientes:',
+        error
+      )
+
+    }
 
   }
 
@@ -76,6 +101,9 @@ function Cliente() {
 
   /*
     Guarda o actualiza un cliente.
+
+    Tanto Usuario como Administrador
+    pueden registrar y actualizar clientes.
   */
   const guardar = async () => {
 
@@ -92,55 +120,95 @@ function Cliente() {
 
     }
 
-    const cliente = {
+    try {
 
-      nombres,
-      apellidos,
-      tipoDocumento,
-      numeroDocumento,
-      correoElectronico
+      const cliente = {
+
+        nombres,
+        apellidos,
+        tipoDocumento,
+        numeroDocumento,
+        correoElectronico
+
+      }
+
+      if (idCliente === null) {
+
+        await guardarCliente(cliente)
+
+        alert('Cliente registrado correctamente')
+
+      } else {
+
+        await actualizarCliente(
+          idCliente,
+          cliente
+        )
+
+        alert('Cliente actualizado correctamente')
+
+      }
+
+      await cargarClientes()
+
+      limpiarFormulario()
+
+    } catch (error) {
+
+      console.error(
+        'Error al guardar cliente:',
+        error
+      )
+
+      if (error.response?.status === 403) {
+
+        alert(
+          'No tienes permisos para realizar esta operación.'
+        )
+
+      } else {
+
+        alert(
+          'No fue posible guardar el cliente.'
+        )
+
+      }
 
     }
-
-    if (idCliente === null) {
-
-      await guardarCliente(cliente)
-
-      alert('Cliente registrado correctamente')
-
-    } else {
-
-      await actualizarCliente(idCliente, cliente)
-
-      alert('Cliente actualizado correctamente')
-
-    }
-
-    cargarClientes()
-
-    limpiarFormulario()
 
   }
 
   /*
-    Carga un cliente en el formulario.
+    Carga un cliente en el formulario
+    para su edición.
   */
   const editarCliente = (cliente) => {
 
     setIdCliente(cliente.id)
 
-    setNombres(cliente.nombres)
-    setApellidos(cliente.apellidos)
-    setTipoDocumento(cliente.tipoDocumento)
-    setNumeroDocumento(cliente.numeroDocumento)
-    setCorreoElectronico(cliente.correoElectronico)
+    setNombres(cliente.nombres || '')
+    setApellidos(cliente.apellidos || '')
+    setTipoDocumento(cliente.tipoDocumento || '')
+    setNumeroDocumento(cliente.numeroDocumento || '')
+    setCorreoElectronico(
+      cliente.correoElectronico || ''
+    )
 
   }
 
   /*
     Elimina un cliente.
+
+    Esta operación solamente está disponible
+    para el Administrador.
   */
   const borrarCliente = async (id) => {
+
+    if (!esAdministrador) {
+
+      return
+
+    }
 
     const confirmar = window.confirm(
       '¿Desea eliminar este cliente?'
@@ -152,9 +220,38 @@ function Cliente() {
 
     }
 
-    await eliminarCliente(id)
+    try {
 
-    cargarClientes()
+      await eliminarCliente(id)
+
+      alert(
+        'Cliente eliminado correctamente'
+      )
+
+      await cargarClientes()
+
+    } catch (error) {
+
+      console.error(
+        'Error al eliminar cliente:',
+        error
+      )
+
+      if (error.response?.status === 403) {
+
+        alert(
+          'No tienes permisos para eliminar clientes.'
+        )
+
+      } else {
+
+        alert(
+          'No fue posible eliminar el cliente.'
+        )
+
+      }
+
+    }
 
   }
 
@@ -167,7 +264,12 @@ function Cliente() {
       <p>
 
         En este módulo se podrán registrar,
-        consultar, actualizar y eliminar clientes.
+        consultar y actualizar clientes.
+
+        {
+          esAdministrador &&
+          ' El Administrador también puede eliminar clientes.'
+        }
 
       </p>
 
@@ -185,7 +287,9 @@ function Cliente() {
         type="text"
         placeholder="Nombres"
         value={nombres}
-        onChange={(e) => setNombres(e.target.value)}
+        onChange={(e) =>
+          setNombres(e.target.value)
+        }
       />
 
       <br /><br />
@@ -194,7 +298,9 @@ function Cliente() {
         type="text"
         placeholder="Apellidos"
         value={apellidos}
-        onChange={(e) => setApellidos(e.target.value)}
+        onChange={(e) =>
+          setApellidos(e.target.value)
+        }
       />
 
       <br /><br />
@@ -203,7 +309,9 @@ function Cliente() {
         type="text"
         placeholder="Tipo de documento"
         value={tipoDocumento}
-        onChange={(e) => setTipoDocumento(e.target.value)}
+        onChange={(e) =>
+          setTipoDocumento(e.target.value)
+        }
       />
 
       <br /><br />
@@ -212,7 +320,9 @@ function Cliente() {
         type="text"
         placeholder="Número de documento"
         value={numeroDocumento}
-        onChange={(e) => setNumeroDocumento(e.target.value)}
+        onChange={(e) =>
+          setNumeroDocumento(e.target.value)
+        }
       />
 
       <br /><br />
@@ -221,7 +331,9 @@ function Cliente() {
         type="email"
         placeholder="Correo electrónico"
         value={correoElectronico}
-        onChange={(e) => setCorreoElectronico(e.target.value)}
+        onChange={(e) =>
+          setCorreoElectronico(e.target.value)
+        }
       />
 
       <br /><br />
@@ -281,29 +393,62 @@ function Cliente() {
               <tr key={cliente.id}>
 
                 <td>{cliente.id}</td>
-                <td>{cliente.nombres}</td>
-                <td>{cliente.apellidos}</td>
-                <td>{cliente.numeroDocumento}</td>
-                <td>{cliente.correoElectronico}</td>
+
+                <td>
+                  {cliente.nombres}
+                </td>
+
+                <td>
+                  {cliente.apellidos}
+                </td>
+
+                <td>
+                  {cliente.numeroDocumento}
+                </td>
+
+                <td>
+                  {cliente.correoElectronico}
+                </td>
 
                 <td>
 
+                  {/* 
+                    Usuario y Administrador
+                    pueden editar.
+                  */}
                   <button
-                    onClick={() => editarCliente(cliente)}
+                    onClick={() =>
+                      editarCliente(cliente)
+                    }
                   >
 
                     Editar
 
                   </button>
 
-                  <button
-                    onClick={() => borrarCliente(cliente.id)}
-                    style={{ marginLeft: '10px' }}
-                  >
 
-                    Eliminar
+                  {/* 
+                    Solamente el Administrador
+                    puede eliminar.
+                  */}
+                  {
+                    esAdministrador && (
 
-                  </button>
+                      <button
+                        onClick={() =>
+                          borrarCliente(cliente.id)
+                        }
+                        style={{
+                          marginLeft: '10px'
+                        }}
+                      >
+
+                        Eliminar
+
+                      </button>
+
+                    )
+                  }
 
                 </td>
 

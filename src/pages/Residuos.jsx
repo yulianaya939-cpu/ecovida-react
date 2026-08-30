@@ -4,56 +4,63 @@
   Este componente representa el módulo de gestión
   de residuos reciclables del sistema Eco Vida.
 
-  Permite consultar, registrar, actualizar
-  y eliminar residuos utilizando la API REST.
+  Permite consultar, registrar y actualizar residuos.
 
-  Cada residuo se encuentra asociado
-  a un cliente registrado en el sistema.
+  La eliminación de residuos está disponible
+  únicamente para el Administrador.
 */
 
 import { useEffect, useState } from 'react'
+
 
 /*
   Importación de los servicios
   relacionados con residuos.
 */
 import {
-
   obtenerResiduos,
   guardarResiduo,
   actualizarResiduo,
   eliminarResiduo
-
 } from '../services/ResiduoService'
+
 
 /*
   Importación del servicio
   encargado de consultar clientes.
 */
 import {
-
   obtenerClientes
-
 } from '../services/ClienteService'
 
 
-function Residuos() {
+function Residuos({ rol }) {
+
+  /*
+    Determina si el usuario actual
+    tiene el rol de Administrador.
+  */
+  const esAdministrador = rol === 'Administrador'
+
 
   /*
     Lista de residuos registrados.
   */
   const [residuos, setResiduos] = useState([])
 
+
   /*
     Lista de clientes registrados.
   */
   const [clientes, setClientes] = useState([])
+
 
   /*
     Identificador del residuo
     que se encuentra en edición.
   */
   const [idResiduo, setIdResiduo] = useState(null)
+
 
   /*
     Campos del formulario.
@@ -64,10 +71,12 @@ function Residuos() {
   const [unidadMedida, setUnidadMedida] = useState('')
   const [descripcion, setDescripcion] = useState('')
 
+
   /*
     Cliente asociado al residuo.
   */
   const [clienteId, setClienteId] = useState('')
+
 
   /*
     Carga inicial del componente.
@@ -80,27 +89,56 @@ function Residuos() {
 
   }, [])
 
+
   /*
     Consulta los residuos registrados.
   */
   const cargarResiduos = async () => {
 
-    const datos = await obtenerResiduos()
+    try {
 
-    setResiduos(datos)
+      const datos = await obtenerResiduos()
+
+      setResiduos(datos)
+
+    } catch (error) {
+
+      console.error(
+        'Error al cargar residuos:',
+        error
+      )
+
+      alert(
+        'No fue posible cargar los residuos.'
+      )
+
+    }
 
   }
+
 
   /*
     Consulta los clientes registrados.
   */
   const cargarClientes = async () => {
 
-    const datos = await obtenerClientes()
+    try {
 
-    setClientes(datos)
+      const datos = await obtenerClientes()
+
+      setClientes(datos)
+
+    } catch (error) {
+
+      console.error(
+        'Error al cargar clientes:',
+        error
+      )
+
+    }
 
   }
+
 
   /*
     Limpia todos los campos
@@ -119,25 +157,27 @@ function Residuos() {
 
   }
 
+
   /*
     Guarda o actualiza un residuo.
   */
   const guardar = async () => {
 
     if (
-
       nombre === '' ||
       tipo === '' ||
       cantidad === '' ||
       clienteId === ''
-
     ) {
 
-      alert('Complete todos los campos obligatorios.')
+      alert(
+        'Complete todos los campos obligatorios.'
+      )
 
       return
 
     }
+
 
     /*
       Objeto enviado al backend.
@@ -151,31 +191,85 @@ function Residuos() {
       descripcion,
 
       cliente: {
-
         id: Number(clienteId)
+      }
+
+    }
+
+
+    try {
+
+      /*
+        Si no existe un ID,
+        se registra un nuevo residuo.
+      */
+      if (idResiduo === null) {
+
+        await guardarResiduo(residuo)
+
+        alert(
+          'Residuo registrado correctamente.'
+        )
+
+      } else {
+
+        /*
+          Si existe un ID,
+          se actualiza el residuo seleccionado.
+        */
+        await actualizarResiduo(
+          idResiduo,
+          residuo
+        )
+
+        alert(
+          'Residuo actualizado correctamente.'
+        )
+
+      }
+
+
+      /*
+        Actualiza el listado después
+        de guardar los cambios.
+      */
+      await cargarResiduos()
+
+
+      /*
+        Limpia el formulario.
+      */
+      limpiarFormulario()
+
+    } catch (error) {
+
+      console.error(
+        'Error al guardar residuo:',
+        error
+      )
+
+      /*
+        Muestra un mensaje cuando
+        la operación no puede realizarse.
+      */
+      if (error.response?.status === 403) {
+
+        alert(
+          'No tienes permisos para realizar esta operación.'
+        )
+
+      } else {
+
+        alert(
+          'No fue posible guardar el residuo.'
+        )
 
       }
 
     }
-        if (idResiduo === null) {
-
-      await guardarResiduo(residuo)
-
-      alert('Residuo registrado correctamente.')
-
-    } else {
-
-      await actualizarResiduo(idResiduo, residuo)
-
-      alert('Residuo actualizado correctamente.')
-
-    }
-
-    cargarResiduos()
-
-    limpiarFormulario()
 
   }
+
 
   /*
     Carga un residuo en el formulario
@@ -185,11 +279,12 @@ function Residuos() {
 
     setIdResiduo(residuo.id)
 
-    setNombre(residuo.nombre)
-    setTipo(residuo.tipo)
-    setCantidad(residuo.cantidad)
-    setUnidadMedida(residuo.unidadMedida)
-    setDescripcion(residuo.descripcion)
+    setNombre(residuo.nombre || '')
+    setTipo(residuo.tipo || '')
+    setCantidad(residuo.cantidad || '')
+    setUnidadMedida(residuo.unidadMedida || '')
+    setDescripcion(residuo.descripcion || '')
+
 
     /*
       Carga el cliente asociado.
@@ -198,18 +293,37 @@ function Residuos() {
 
       setClienteId(residuo.cliente.id)
 
+    } else {
+
+      setClienteId('')
+
     }
 
   }
 
+
   /*
     Elimina un residuo registrado.
+
+    Esta operación solamente puede ser
+    ejecutada por un Administrador.
   */
   const borrarResiduo = async (id) => {
+
+    /*
+      Protección adicional en el frontend.
+    */
+    if (!esAdministrador) {
+
+      return
+
+    }
+
 
     const confirmar = window.confirm(
       '¿Desea eliminar este residuo?'
     )
+
 
     if (!confirmar) {
 
@@ -217,17 +331,54 @@ function Residuos() {
 
     }
 
-    await eliminarResiduo(id)
 
-    cargarResiduos()
+    try {
+
+      await eliminarResiduo(id)
+
+      alert(
+        'Residuo eliminado correctamente.'
+      )
+
+      await cargarResiduos()
+
+    } catch (error) {
+
+      console.error(
+        'Error al eliminar residuo:',
+        error
+      )
+
+
+      /*
+        Si Spring Boot rechaza la operación
+        por permisos, se informa al usuario.
+      */
+      if (error.response?.status === 403) {
+
+        alert(
+          'No tienes permisos para eliminar residuos.'
+        )
+
+      } else {
+
+        alert(
+          'No fue posible eliminar el residuo.'
+        )
+
+      }
+
+    }
 
   }
+
 
   return (
 
     <section>
 
       <h2>Módulo de Residuos</h2>
+
 
       <p>
 
@@ -236,19 +387,17 @@ function Residuos() {
 
       </p>
 
+
       <h3>
 
         {
-
           idResiduo === null
-
             ? 'Registrar residuo'
-
             : 'Actualizar residuo'
-
         }
 
       </h3>
+
 
       <input
         type="text"
@@ -257,7 +406,9 @@ function Residuos() {
         onChange={(e) => setNombre(e.target.value)}
       />
 
-      <br /><br />
+      <br />
+      <br />
+
 
       <input
         type="text"
@@ -266,7 +417,9 @@ function Residuos() {
         onChange={(e) => setTipo(e.target.value)}
       />
 
-      <br /><br />
+      <br />
+      <br />
+
 
       <input
         type="number"
@@ -275,7 +428,9 @@ function Residuos() {
         onChange={(e) => setCantidad(e.target.value)}
       />
 
-      <br /><br />
+      <br />
+      <br />
+
 
       <input
         type="text"
@@ -284,7 +439,9 @@ function Residuos() {
         onChange={(e) => setUnidadMedida(e.target.value)}
       />
 
-      <br /><br />
+      <br />
+      <br />
+
 
       <input
         type="text"
@@ -293,7 +450,9 @@ function Residuos() {
         onChange={(e) => setDescripcion(e.target.value)}
       />
 
-      <br /><br />
+      <br />
+      <br />
+
 
       {/* Cliente asociado al residuo */}
 
@@ -303,13 +462,11 @@ function Residuos() {
       >
 
         <option value="">
-
           Seleccione un cliente
-
         </option>
 
-        {
 
+        {
           clientes.map(cliente => (
 
             <option
@@ -322,29 +479,26 @@ function Residuos() {
             </option>
 
           ))
-
         }
 
       </select>
 
-      <br /><br />
+      <br />
+      <br />
+
 
       <button onClick={guardar}>
 
         {
-
           idResiduo === null
-
             ? 'Guardar Residuo'
-
             : 'Actualizar Residuo'
-
         }
 
       </button>
 
-      {
 
+      {
         idResiduo !== null && (
 
           <button
@@ -357,12 +511,16 @@ function Residuos() {
           </button>
 
         )
-
       }
+
 
       <hr />
 
-      <h3>Listado de residuos</h3>
+
+      <h3>
+        Listado de residuos
+      </h3>
+
 
       <table border="1">
 
@@ -382,59 +540,89 @@ function Residuos() {
 
         </thead>
 
+
         <tbody>
 
           {
-
             residuos.map(residuo => (
 
               <tr key={residuo.id}>
 
-                <td>{residuo.id}</td>
-                <td>{residuo.nombre}</td>
-                <td>{residuo.tipo}</td>
-                <td>{residuo.cantidad}</td>
-                <td>{residuo.unidadMedida}</td>
+                <td>
+                  {residuo.id}
+                </td>
+
+                <td>
+                  {residuo.nombre}
+                </td>
+
+                <td>
+                  {residuo.tipo}
+                </td>
+
+                <td>
+                  {residuo.cantidad}
+                </td>
+
+                <td>
+                  {residuo.unidadMedida}
+                </td>
+
 
                 <td>
 
                   {
-
                     residuo.cliente
-
                       ? `${residuo.cliente.nombres} ${residuo.cliente.apellidos}`
-
                       : 'Sin cliente'
-
                   }
 
                 </td>
 
+
                 <td>
 
+                  {/* 
+                    El botón Editar está disponible
+                    para todos los usuarios autenticados.
+                  */}
                   <button
-                    onClick={() => editarResiduo(residuo)}
+                    onClick={() =>
+                      editarResiduo(residuo)
+                    }
                   >
 
                     Editar
 
                   </button>
 
-                  <button
-                    onClick={() => borrarResiduo(residuo.id)}
-                    style={{ marginLeft: '10px' }}
-                  >
 
-                    Eliminar
+                  {/*
+                    El botón Eliminar solamente
+                    aparece para el Administrador.
+                  */}
+                  {
+                    esAdministrador && (
 
-                  </button>
+                      <button
+                        onClick={() =>
+                          borrarResiduo(residuo.id)
+                        }
+                        style={{ marginLeft: '10px' }}
+                      >
+
+                        Eliminar
+
+                      </button>
+
+                    )
+                  }
 
                 </td>
 
               </tr>
 
             ))
-
           }
 
         </tbody>
@@ -446,5 +634,6 @@ function Residuos() {
   )
 
 }
+
 
 export default Residuos

@@ -7,88 +7,91 @@
 
   Aquí se implementan las operaciones CRUD
   relacionadas con las recolecciones.
+
+  Las solicitudes utilizan la instancia centralizada
+  de Axios, que agrega automáticamente el JWT
+  almacenado en localStorage.
 */
 
-// URL de la API REST de recolecciones.
-const URL_RECOLECCIONES = 'http://localhost:8080/api/recolecciones'
+import api from "./api";
+
+// URL relativa de la API REST de recolecciones.
+// La URL base http://localhost:8080 está configurada
+// en el archivo api.js.
+const URL_RECOLECCIONES = "/api/recolecciones";
 
 
 /*
   Obtiene todas las recolecciones registradas.
 
   Método HTTP utilizado: GET
+
+  El JWT se agrega automáticamente mediante
+  el interceptor configurado en api.js.
 */
 export const obtenerRecolecciones = async () => {
 
-  const respuesta = await fetch(URL_RECOLECCIONES)
+  const respuesta = await api.get(
+    URL_RECOLECCIONES
+  );
 
-  const datos = await respuesta.json()
-
-  return datos
-}
+  return respuesta.data;
+};
 
 
 /*
   Registra una nueva recolección.
 
   Método HTTP utilizado: POST
+
+  El objeto recoleccion contiene la información
+  que será enviada al backend.
 */
 export const guardarRecoleccion = async (recoleccion) => {
 
-  const respuesta = await fetch(URL_RECOLECCIONES, {
+  const respuesta = await api.post(
+    URL_RECOLECCIONES,
+    recoleccion
+  );
 
-    method: 'POST',
-
-    headers: {
-      'Content-Type': 'application/json'
-    },
-
-    body: JSON.stringify(recoleccion)
-
-  })
-
-  return await respuesta.json()
-}
+  return respuesta.data;
+};
 
 
 /*
   Actualiza una recolección existente.
 
   Método HTTP utilizado: PUT
+
+  Se utiliza el ID para identificar la recolección
+  que será modificada.
 */
-export const actualizarRecoleccion = async (id, recoleccion) => {
+export const actualizarRecoleccion = async (
+  id,
+  recoleccion
+) => {
 
-  const respuesta = await fetch(
+  const respuesta = await api.put(
     `${URL_RECOLECCIONES}/${id}`,
-    {
+    recoleccion
+  );
 
-      method: 'PUT',
-
-      headers: {
-        'Content-Type': 'application/json'
-      },
-
-      body: JSON.stringify(recoleccion)
-
-    }
-  )
-
-  return await respuesta.json()
-}
+  return respuesta.data;
+};
 
 
 /*
   Elimina una recolección registrada.
 
   Método HTTP utilizado: DELETE
+
+  Se utiliza el ID para identificar la recolección
+  que será eliminada.
 */
 export const eliminarRecoleccion = async (id) => {
 
-  await fetch(
-    `${URL_RECOLECCIONES}/${id}`,
-    {
-      method: 'DELETE'
-    }
-  )
+  await api.delete(
+    `${URL_RECOLECCIONES}/${id}`
+  );
 
-}
+};

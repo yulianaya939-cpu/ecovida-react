@@ -1,0 +1,311 @@
+/*
+  Usuario.css
+
+  Estilos exclusivos del módulo
+  de gestión de usuarios.
+*/
+
+
+.usuario-container {
+
+  width: 90%;
+  max-width: 900px;
+
+  margin: 30px auto;
+
+  padding: 25px;
+
+  background-color: white;
+
+  border-radius: 12px;
+
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+
+}
+
+
+/*
+  Título principal.
+*/
+
+.usuario-container h2 {
+
+  text-align: center;
+
+  color: #168b22;
+
+  margin-bottom: 30px;
+
+}
+
+
+/*
+  Formulario.
+*/
+
+.usuario-formulario {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 14px;
+
+}
+
+
+.usuario-formulario h3 {
+
+  text-align: center;
+
+  color: #168b22;
+
+  margin-bottom: 10px;
+
+}
+
+
+/*
+  Campos de texto.
+*/
+
+.usuario-formulario input[type="text"],
+.usuario-formulario input[type="email"],
+.usuario-formulario input[type="password"],
+.usuario-formulario select {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 11px;
+
+  border: 1px solid #b9dfbd;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+
+}
+
+
+/*
+  Campo de rol.
+*/
+
+.campo-usuario {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+
+}
+
+
+.campo-usuario label {
+
+  font-weight: bold;
+
+  color: #176d20;
+
+}
+
+
+.campo-usuario select {
+
+  width: 100%;
+
+}
+
+
+/*
+  Usuario activo.
+
+  Checkbox y texto alineados.
+*/
+
+.usuario-activo {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 4px;
+
+}
+
+
+.usuario-activo input {
+
+  width: 16px;
+
+  height: 16px;
+
+  margin: 0;
+
+}
+
+
+.usuario-activo label {
+
+  font-size: 14px;
+
+  color: #333;
+
+}
+
+
+/*
+  Botones del formulario.
+*/
+
+.usuario-botones {
+
+  display: flex;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 8px;
+
+}
+
+
+.usuario-botones button {
+
+  padding: 10px 20px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background-color: #19d600;
+
+  color: white;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+}
+
+
+.usuario-botones button:hover {
+
+  background-color: #13b800;
+
+}
+
+
+/*
+  Separación antes del listado.
+*/
+
+.usuario-listado {
+
+  margin-top: 35px;
+
+  padding-top: 25px;
+
+  border-top: 1px solid #d5ead7;
+
+}
+
+
+.usuario-listado h3 {
+
+  text-align: center;
+
+  color: #168b22;
+
+  margin-bottom: 20px;
+
+}
+
+
+/*
+  Tabla.
+*/
+
+.usuario-listado table {
+
+  width: 100%;
+
+  border-collapse: collapse;
+
+}
+
+
+.usuario-listado th {
+
+  background-color: #2e8134;
+
+  color: white;
+
+  padding: 12px;
+
+  text-align: center;
+
+}
+
+
+.usuario-listado td {
+
+  padding: 12px;
+
+  text-align: center;
+
+  border-bottom: 1px solid #ddd;
+
+}
+
+
+.usuario-listado tr:nth-child(even) {
+
+  background-color: #f4fff4;
+
+}
+
+
+/*
+  Botones de acciones.
+*/
+
+.acciones-usuario {
+
+  white-space: nowrap;
+
+}
+
+
+.acciones-usuario button {
+
+  padding: 8px 14px;
+
+  margin: 3px;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background-color: #19d600;
+
+  color: white;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+}
+
+
+.acciones-usuario button:hover {
+
+  background-color: #13b800;
+
+}
