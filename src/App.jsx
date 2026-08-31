@@ -29,13 +29,17 @@ function App() {
     Estado que indica si el usuario
     ha iniciado sesión.
   */
-  const [autenticado, setAutenticado] = useState(false)
+  const [autenticado, setAutenticado] = useState(
+  () => Boolean(localStorage.getItem("token"))
+)
 
   /*
     Estado que almacena el rol del
     usuario que inició sesión.
   */
-  const [rol, setRol] = useState(null)
+ const [rol, setRol] = useState(
+  () => localStorage.getItem("rol")
+)
 
   /*
     Estado que controla la página
@@ -85,6 +89,8 @@ function App() {
       <Menu
         setPagina={setPagina}
         rol={rol}
+        setAutenticado={setAutenticado}
+        setRol={setRol}
       />
 
 
